@@ -53,4 +53,41 @@ summary
     ## 10 Cincinnati,OH                        694                          309
     ## # … with 41 more rows
 
+``` r
+# Does it make sense to prop.test one city?
+Baltimore_MD_proptest <- prop.test(summary %>% filter(city_state == "Baltimore,MD") %>% pull(number_of_unsolved_homicides), 
+  summary %>% filter(city_state == "Baltimore,MD") %>% pull(total_number_of_homicides)) %>% 
+  broom::tidy()
+
+# Save the output of Baltimore,MD prop.test as an R object Baltimore_MD_proptest.
+
+# Do prop.test for all cities
+all_cities <- summary %>% mutate(prop_tests = map2(.x = number_of_unsolved_homicides, .y = total_number_of_homicides, ~ prop.test(x = .x, n = .y)),
+  tidy_df = map(.x = prop_tests, ~ broom::tidy(.x))) %>% 
+  select(-prop_tests) %>% 
+  unnest(tidy_df) %>% 
+  select(city_state, estimate, conf.low, conf.high)
+```
+
+    ## Warning in prop.test(x = .x, n = .y): Chi-squared approximation may be incorrect
+
+``` r
+all_cities
+```
+
+    ## # A tibble: 51 × 4
+    ##    city_state     estimate conf.low conf.high
+    ##    <chr>             <dbl>    <dbl>     <dbl>
+    ##  1 Albuquerque,NM    0.386    0.337     0.438
+    ##  2 Atlanta,GA        0.383    0.353     0.415
+    ##  3 Baltimore,MD      0.646    0.628     0.663
+    ##  4 Baton Rouge,LA    0.462    0.414     0.511
+    ##  5 Birmingham,AL     0.434    0.399     0.469
+    ##  6 Boston,MA         0.505    0.465     0.545
+    ##  7 Buffalo,NY        0.612    0.569     0.654
+    ##  8 Charlotte,NC      0.300    0.266     0.336
+    ##  9 Chicago,IL        0.736    0.724     0.747
+    ## 10 Cincinnati,OH     0.445    0.408     0.483
+    ## # … with 41 more rows
+
 ### Problem 3

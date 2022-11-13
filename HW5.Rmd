@@ -31,7 +31,7 @@ homicides = read_csv("homicide-data.csv")
 
 In the `homicides` dataset, there are `r nrow(homicides)` observations and `r ncol(homicides)` variables, including `r names(homicides)`.
 
-```{r}
+```{r, raw and summary}
 
 homicides <- homicides %>% 
   janitor::clean_names() %>% 
@@ -46,6 +46,26 @@ summary <- homicides %>% group_by(city_state) %>%
 summary
 
 ```
+
+```{r, prop.test}
+# Does it make sense to prop.test one city?
+Baltimore_MD_proptest <- prop.test(summary %>% filter(city_state == "Baltimore,MD") %>% pull(number_of_unsolved_homicides), 
+  summary %>% filter(city_state == "Baltimore,MD") %>% pull(total_number_of_homicides)) %>% 
+  broom::tidy()
+
+# Save the output of Baltimore,MD prop.test as an R object Baltimore_MD_proptest.
+
+# Do prop.test for all cities
+all_cities <- summary %>% mutate(prop_tests = map2(.x = number_of_unsolved_homicides, .y = total_number_of_homicides, ~ prop.test(x = .x, n = .y)),
+  tidy_df = map(.x = prop_tests, ~ broom::tidy(.x))) %>% 
+  select(-prop_tests) %>% 
+  unnest(tidy_df) %>% 
+  select(city_state, estimate, conf.low, conf.high)
+
+all_cities
+
+```
+
 
 ### Problem 3
 
