@@ -182,6 +182,8 @@ tidy_paths %>%
 
 ![](HW5_files/figure-gfm/plot%20Q1-1.png)<!-- -->
 
+#### Looking at the comparision between control and experiment, we see that over all the controls have lower result values in subjects compared to experiment group. In teh control group, it flacuate within a range, whereas the experiment group increase in most subjects.
+
 ### Problem 2
 
 ``` r
