@@ -111,28 +111,52 @@ combine_dat %>% head()
 power <- data.frame(set_mu = 0:6, rejected = rep(NA,7))
 
 for(i in 1:7) {
-power[i,2] <- combine_dat %>% filter(p_value < 0.05, set_mu == (i-1)) %>% count()
+power[i,2] <- combine_dat %>% filter(p_value < 0.05, set_mu == (i-1)) %>% count() 
+power[i,2] = power[i,2]/5000
 }
 
 power_plot = power %>% ggplot(aes(x = set_mu, y = rejected)) +
   geom_point(aes(color = set_mu), size = 2) +
   geom_line(alpha = 0.3) +
-  labs(x = "True value of Mu",
-       y = "Power of the test")
+  labs(x = "True value of μ",
+       y = "Power of the test") +
+  ggtitle("True value of μ vs. Power of the test")
 
 power_plot
 
 ```
 
-#### We can see form the plot that as the true value of Mu increase, power of the test increases. Therefore as the effect size increases, the power od the test increases. 
+#### We can see form the plot that as the true value of Mu increase, power of the test increases. Therefore as the effect size increases, the power of the test increases. 
 
 ```{r, sim plot 2}
 
-estimated_mu <- data.frame(set_mu = 0:6, rejected = rep(NA,7))
+estimated_mu <- combine_dat %>% group_by(set_mu) %>% summarise(mean = mean(mu_hat))
 
-for(i in 1:7) {
-power[i,2] <- combine_dat %>% filter(p_value < 0.05, set_mu == (i-1)) %>% count()
-}
+rejected_only <- combine_dat %>% filter(p_value < 0.05) %>% group_by(set_mu) %>% summarise(mean = mean(mu_hat))
+
+estimated_mu_plot <- estimated_mu %>% ggplot(aes(x = set_mu, y = mean)) +
+  geom_point(aes(color = set_mu), size = 2) +
+  geom_line(alpha = 0.3) +
+  labs(x = "True value of μ",
+       y = "Average estimate of μ̂")+
+  ggtitle("True value of μ vs. Average estimate of μ in all simulations")
+
+
+rejected_only_estimated_mu_plot <- rejected_only %>% ggplot(aes(x = set_mu, y = mean)) +
+  geom_point(aes(color = set_mu), size = 2) +
+  geom_line(alpha = 0.3) +
+  labs(x = "True value of μ",
+       y = "Average estimate of μ̂")+
+  ggtitle("True value of μ vs. Average estimate of μ in samples for which the null was rejected")
 
 ```
 
+```{r, show plot}
+
+estimated_mu_plot
+
+rejected_only_estimated_mu_plot
+
+```
+
+#### The sample average of μ̂ across tests for which the null is rejected do not approximately equal to the true value of μ when μ is below 4. This is because the power of the test increases as effect size increases, there are more proportion of times the null was rejected as μ increases. Thus, sample average of μ̂ across tests for which the null is rejected approximately equal to the true value of μ when μ is greater.
