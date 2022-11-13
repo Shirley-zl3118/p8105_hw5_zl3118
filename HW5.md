@@ -20,9 +20,7 @@ homicides = read_csv("homicide-data.csv")
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-In the `homicides` dataset, there are 52179 observations and 12
-variables, including uid, reported_date, victim_last, victim_first,
-victim_race, victim_age, victim_sex, city, state, lat, lon, disposition.
+#### In the `homicides` dataset, there are 52179 observations and 12 variables, including uid, reported_date, victim_last, victim_first, victim_race, victim_age, victim_sex, city, state, lat, lon, disposition.
 
 ``` r
 homicides <- homicides %>% 
@@ -108,19 +106,8 @@ all_cities_plot
 ``` r
 set.seed(123)
 
-for (i in 0:6) {
-sim_data <- t.test( x = rnorm(30, mean = 1, sd = 5))
-  
-record <- sim_data %>% broom::tidy(.x) %>% 
-  mutate(
-    mu_hat = estimate,
-    p_value= p.value) %>% 
-  select(mu_hat, p_value)
-}
-
-
 sim = function(mu, n = 30, sigma = 5) {
-  sim_data <- t.test(x = rnorm(n = n, mean = mu, sd = sigma))
+  sim_data <- t.test(x = rnorm(n = n, mean = mu, sd = sigma), conf.int = 0.95)
   sim_data <- sim_data %>% broom::tidy(.x) %>% 
    mutate(set_mu = mu, mu_hat = estimate, p_value= p.value) %>% 
    select(set_mu, mu_hat, p_value)
@@ -139,10 +126,30 @@ for (i in 1:5000) {
 combine_dat %>% head()
 ```
 
-    ##   set_mu     mu_hat    p_value
-    ## 1      0 -0.4482489 0.57831084
-    ## 2      0  0.2538252 0.78892441
-    ## 3      0  1.6834513 0.04827473
-    ## 4      0  0.3455197 0.71781302
-    ## 5      0 -0.5557018 0.60541478
-    ## 6      0  0.1670031 0.84091059
+    ##   set_mu     mu_hat   p_value
+    ## 1      0 -0.2355188 0.7944204
+    ## 2      0  0.8916917 0.2516694
+    ## 3      0  0.1221020 0.8788492
+    ## 4      0 -0.4694447 0.5750370
+    ## 5      0 -0.9179020 0.3884876
+    ## 6      0  0.7685832 0.3785964
+
+``` r
+power <- data.frame(set_mu = 0:6, rejected = rep(NA,7))
+
+for(i in 1:7) {
+power[i,2] <- combine_dat %>% filter(p_value < 0.05, set_mu == (i-1)) %>% count()
+}
+
+power_plot = power %>% ggplot(aes(x = set_mu, y = rejected)) +
+  geom_point(aes(color = set_mu), size = 2) +
+  geom_line(alpha = 0.3) +
+  labs(x = "True value of Mu",
+       y = "Power of the test")
+
+power_plot
+```
+
+![](HW5_files/figure-gfm/sim%20plot-1.png)<!-- -->
+
+#### We can see form the plot that as the true value of Mu increase, power of the test increases. Therefore as the effect size increases, the power od the test increases.

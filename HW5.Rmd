@@ -29,7 +29,7 @@ homicides = read_csv("homicide-data.csv")
 
 ```
 
-In the `homicides` dataset, there are `r nrow(homicides)` observations and `r ncol(homicides)` variables, including `r names(homicides)`.
+#### In the `homicides` dataset, there are `r nrow(homicides)` observations and `r ncol(homicides)` variables, including `r names(homicides)`.
 
 ```{r, raw and summary}
 
@@ -82,22 +82,11 @@ all_cities_plot
 
 ### Problem 3
 
-```{r}
+```{r, simulation}
 set.seed(123)
 
-for (i in 0:6) {
-sim_data <- t.test( x = rnorm(30, mean = 1, sd = 5))
-  
-record <- sim_data %>% broom::tidy(.x) %>% 
-  mutate(
-    mu_hat = estimate,
-    p_value= p.value) %>% 
-  select(mu_hat, p_value)
-}
-
-
 sim = function(mu, n = 30, sigma = 5) {
-  sim_data <- t.test(x = rnorm(n = n, mean = mu, sd = sigma))
+  sim_data <- t.test(x = rnorm(n = n, mean = mu, sd = sigma), conf.int = 0.95)
   sim_data <- sim_data %>% broom::tidy(.x) %>% 
    mutate(set_mu = mu, mu_hat = estimate, p_value= p.value) %>% 
    select(set_mu, mu_hat, p_value)
@@ -114,6 +103,36 @@ for (i in 1:5000) {
 }
 
 combine_dat %>% head()
+
+```
+
+```{r, sim plot}
+
+power <- data.frame(set_mu = 0:6, rejected = rep(NA,7))
+
+for(i in 1:7) {
+power[i,2] <- combine_dat %>% filter(p_value < 0.05, set_mu == (i-1)) %>% count()
+}
+
+power_plot = power %>% ggplot(aes(x = set_mu, y = rejected)) +
+  geom_point(aes(color = set_mu), size = 2) +
+  geom_line(alpha = 0.3) +
+  labs(x = "True value of Mu",
+       y = "Power of the test")
+
+power_plot
+
+```
+
+#### We can see form the plot that as the true value of Mu increase, power of the test increases. Therefore as the effect size increases, the power od the test increases. 
+
+```{r, sim plot 2}
+
+estimated_mu <- data.frame(set_mu = 0:6, rejected = rep(NA,7))
+
+for(i in 1:7) {
+power[i,2] <- combine_dat %>% filter(p_value < 0.05, set_mu == (i-1)) %>% count()
+}
 
 ```
 
