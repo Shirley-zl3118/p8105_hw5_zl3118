@@ -104,3 +104,45 @@ all_cities_plot
 ![](HW5_files/figure-gfm/plot-1.png)<!-- -->
 
 ### Problem 3
+
+``` r
+set.seed(123)
+
+for (i in 0:6) {
+sim_data <- t.test( x = rnorm(30, mean = 1, sd = 5))
+  
+record <- sim_data %>% broom::tidy(.x) %>% 
+  mutate(
+    mu_hat = estimate,
+    p_value= p.value) %>% 
+  select(mu_hat, p_value)
+}
+
+
+sim = function(mu, n = 30, sigma = 5) {
+  sim_data <- t.test(x = rnorm(n = n, mean = mu, sd = sigma))
+  sim_data <- sim_data %>% broom::tidy(.x) %>% 
+   mutate(set_mu = mu, mu_hat = estimate, p_value= p.value) %>% 
+   select(set_mu, mu_hat, p_value)
+}
+
+
+combine_dat <- data.frame(set_mu = c(), mu_hat = c(), p_value = c())
+
+for (j in 0:6) { 
+for (i in 1:5000) {
+  result_dat <- sim(j)
+  combine_dat <- bind_rows(combine_dat,result_dat)
+}
+}
+
+combine_dat %>% head()
+```
+
+    ##   set_mu     mu_hat    p_value
+    ## 1      0 -0.4482489 0.57831084
+    ## 2      0  0.2538252 0.78892441
+    ## 3      0  1.6834513 0.04827473
+    ## 4      0  0.3455197 0.71781302
+    ## 5      0 -0.5557018 0.60541478
+    ## 6      0  0.1670031 0.84091059

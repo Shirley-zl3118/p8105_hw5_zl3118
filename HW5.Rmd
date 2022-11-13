@@ -83,8 +83,37 @@ all_cities_plot
 ### Problem 3
 
 ```{r}
+set.seed(123)
+
+for (i in 0:6) {
+sim_data <- t.test( x = rnorm(30, mean = 1, sd = 5))
+  
+record <- sim_data %>% broom::tidy(.x) %>% 
+  mutate(
+    mu_hat = estimate,
+    p_value= p.value) %>% 
+  select(mu_hat, p_value)
+}
 
 
+sim = function(mu, n = 30, sigma = 5) {
+  sim_data <- t.test(x = rnorm(n = n, mean = mu, sd = sigma))
+  sim_data <- sim_data %>% broom::tidy(.x) %>% 
+   mutate(set_mu = mu, mu_hat = estimate, p_value= p.value) %>% 
+   select(set_mu, mu_hat, p_value)
+}
+
+
+combine_dat <- data.frame(set_mu = c(), mu_hat = c(), p_value = c())
+
+for (j in 0:6) { 
+for (i in 1:5000) {
+  result_dat <- sim(j)
+  combine_dat <- bind_rows(combine_dat,result_dat)
+}
+}
+
+combine_dat %>% head()
 
 ```
 
