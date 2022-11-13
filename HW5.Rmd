@@ -1,0 +1,21 @@
+---
+title: "HW5"
+author: "Shirley Liang"
+date: "2022-11-13"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+
+```
+
+```{r}
+
+
+
+```
+
