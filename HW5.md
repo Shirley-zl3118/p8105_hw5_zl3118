@@ -90,4 +90,17 @@ all_cities
     ## 10 Cincinnati,OH     0.445    0.408     0.483
     ## # … with 41 more rows
 
+``` r
+all_cities_plot = all_cities %>% 
+  mutate(city_state = fct_reorder(city_state, estimate)) %>% 
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+all_cities_plot
+```
+
+![](HW5_files/figure-gfm/plot-1.png)<!-- -->
+
 ### Problem 3
