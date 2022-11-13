@@ -23,7 +23,7 @@ library(tidyverse)
 
 ### Problem 2
 
-```{r, raw data}
+```{r, raw data, warning=FALSE}
 
 homicides = read_csv("homicide-data.csv")
 
@@ -33,7 +33,17 @@ In the `homicides` dataset, there are `r nrow(homicides)` observations and `r nc
 
 ```{r}
 
+homicides <- homicides %>% 
+  janitor::clean_names() %>% 
+  mutate(city_state = str_c(city, state, sep = ","),
+  disposition_status = case_when(disposition == "Closed without arrest" ~ "unsolved",
+                     disposition == "Open/No arrest" ~ "unsolved",
+                     disposition == "Closed by arrest" ~ "resolved")) 
 
+summary <- homicides %>% group_by(city_state) %>% 
+  summarize(total_number_of_homicides = n(), number_of_unsolved_homicides = sum(disposition_status == "unsolved")) 
+
+summary
 
 ```
 
