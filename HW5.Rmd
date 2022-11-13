@@ -17,7 +17,22 @@ library(tidyverse)
 
 ```{r}
 
+allnames = tibble(files = list.files("./data"))
 
+paths = allnames %>% 
+  tibble(path = list.files("./data"), ) %>% 
+  mutate(
+    path = str_c("data/", path),
+    data = map(path, read_csv))
+
+tidy_paths = paths %>%
+  separate(files, into = c("arm", "subjectID")) %>% 
+  select(arm, subjectID, data) %>% 
+  unnest(data) %>% 
+  pivot_longer(
+    week_1:week_8,
+    names_to = "week",
+    values_to = "result_data")
 
 ```
 
