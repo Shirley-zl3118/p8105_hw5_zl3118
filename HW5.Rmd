@@ -13,6 +13,32 @@ library(tidyverse)
 
 ```
 
+### Problem 1
+
+```{r}
+
+
+
+```
+
+### Problem 2
+
+```{r, raw data}
+
+homicides = read_csv("homicide-data.csv")
+
+```
+
+In the `homicides` dataset, there are `r nrow(homicides)` observations and `r ncol(homicides)` variables, including `r names(homicides)`.
+
+```{r}
+
+
+
+```
+
+### Problem 3
+
 ```{r}
 
 
