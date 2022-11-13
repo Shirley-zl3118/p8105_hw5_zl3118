@@ -15,7 +15,7 @@ library(tidyverse)
 
 ### Problem 1
 
-```{r}
+```{r, warning=FALSE}
 
 allnames = tibble(files = list.files("./data"))
 
@@ -35,6 +35,22 @@ tidy_paths = paths %>%
     values_to = "result_data")
 
 ```
+
+```{r, plot Q1}
+
+tidy_paths %>% 
+  mutate(
+    arm = recode(
+      arm, 
+      con = "control",
+      exp = "experiment" )
+  ) %>% 
+  ggplot(aes(x = week, y = result_data, group = subjectID, color = subjectID)) + 
+  geom_line() + 
+  facet_grid(.~arm) 
+
+```
+
 
 ### Problem 2
 

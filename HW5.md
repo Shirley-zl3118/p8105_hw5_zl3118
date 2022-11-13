@@ -167,8 +167,20 @@ tidy_paths = paths %>%
     values_to = "result_data")
 ```
 
-    ## Warning: Expected 2 pieces. Additional pieces discarded in 20 rows [1, 2, 3, 4,
-    ## 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].
+``` r
+tidy_paths %>% 
+  mutate(
+    arm = recode(
+      arm, 
+      con = "control",
+      exp = "experiment" )
+  ) %>% 
+  ggplot(aes(x = week, y = result_data, group = subjectID, color = subjectID)) + 
+  geom_line() + 
+  facet_grid(.~arm) 
+```
+
+![](HW5_files/figure-gfm/plot%20Q1-1.png)<!-- -->
 
 ### Problem 2
 
